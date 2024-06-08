@@ -5,6 +5,24 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Image.asset(
+                'assets/loginScreen.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

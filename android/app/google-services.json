@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "227117753015",
+    "project_id": "fixmatesflutter",
+    "storage_bucket": "fixmatesflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227117753015:android:22a974a01dce653daba332",
+        "android_client_info": {
+          "package_name": "com.example.fix_mates_user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7-m4YsMBnx99TjozbO0g8O6ihnARvMhQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
