@@ -8,25 +8,33 @@ import 'package:flutter/widgets.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen(
-      {super.key, required this.phoneNumber, required this.verificationId});
+  const OtpScreen({
+    Key? key,
+    required this.phoneNumber,
+    required this.verificationId,
+  }) : super(key: key);
+
   final String phoneNumber;
   final String verificationId;
+
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  var code = "";
+
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
       textStyle: TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
+        fontSize: 20,
+        color: Color.fromRGBO(30, 60, 87, 1),
+        fontWeight: FontWeight.w600,
+      ),
       decoration: BoxDecoration(
         border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
         borderRadius: BorderRadius.circular(20),
@@ -43,71 +51,67 @@ class _OtpScreenState extends State<OtpScreen> {
         color: Color.fromRGBO(234, 239, 243, 1),
       ),
     );
-    var code = "";
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Phone Verification',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                'Verify phone number',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              Pinput(
-                length: 6,
-                pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                showCursor: true,
-                onChanged: (value) {
-                  code = value;
-                },
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                            verificationId: widget.verificationId,
-                            smsCode: code);
 
-                    await auth.signInWithCredential(credential);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                    );
-                  } catch (e) {
-                    print('Wrong otp');
-                  }
-                },
-                child: const Text('Verify OTP'),
-              )
-            ],
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0), // Adjust the padding here
+        child: Container(
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Verification Code',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'We just sent you a verification code. Check your inbox to get it.',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey[700]),
+                  textAlign: TextAlign.left,
+                ),
+                const SizedBox(height: 20),
+                Pinput(
+                  length: 6,
+                  pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                  showCursor: true,
+                  onChanged: (value) {
+                    code = value;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                        verificationId: widget.verificationId,
+                        smsCode: code,
+                      );
+
+                      await auth.signInWithCredential(credential);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    } catch (e) {
+                      print('Wrong OTP');
+                    }
+                  },
+                  child: const Text('Verify OTP'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-}
-
-Future<bool> checkUserAvailable({phone}) async {
-  try {
-    QuerySnapshot obj = await FirebaseFirestore.instance
-        .collection('usersDetails')
-        .where('userPhone', isEqualTo: phone)
-        .get();
-
-    return obj.docs.isNotEmpty;
-  } catch (e) {
-    print(e);
-    return false;
   }
 }
