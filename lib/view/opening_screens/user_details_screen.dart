@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UserDetailsScreen extends StatefulWidget {
-  const UserDetailsScreen({Key? key}) : super(key: key);
+  final String phoneNumber;
+  const UserDetailsScreen({Key? key, required this.phoneNumber})
+      : super(key: key);
 
   @override
   _UserDetailsScreenState createState() => _UserDetailsScreenState();
@@ -18,6 +20,11 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String countyCode = '+91';
   String verificationId = '';
+  @override
+  void initState() {
+    super.initState();
+    phoneController.text = widget.phoneNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +128,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                             if (value.length != 10) {
                               return 'Phone number must be 10 digits';
                             }
-                            // Add additional validation if needed
                             return null;
                           },
                           keyboardType: TextInputType.phone,
@@ -170,7 +176,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: countyCode + phoneController.text,
         verificationCompleted: (PhoneAuthCredential credential) {},
-        verificationFailed: (FirebaseAuthException e) {},
+        verificationFailed: (FirebaseAuthException e) {
+          print('Failed to verify phone number: $e');
+        },
         codeSent: (String verificationId, int? resendToken) {
           setState(() {
             this.verificationId = verificationId;

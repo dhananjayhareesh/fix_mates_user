@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
-import 'package:fix_mates_user/view/opening_screens/login_screen.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -54,7 +52,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(20.0), // Adjust the padding here
+        padding: const EdgeInsets.all(20.0),
         child: Container(
           alignment: Alignment.center,
           child: SingleChildScrollView(

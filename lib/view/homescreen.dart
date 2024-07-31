@@ -1,127 +1,154 @@
+import 'package:fix_mates_user/resources/constants/textstyle.dart';
+import 'package:fix_mates_user/resources/strings/hometext.dart';
+import 'package:fix_mates_user/resources/widgets/homescreen_widget/carosal_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fix_mates_user/resources/widgets/homescreen_widget/homescreen_appbar_widget.dart';
+import 'package:fix_mates_user/resources/widgets/homescreen_widget/homescreen_grid_widget.dart';
+import 'package:fix_mates_user/resources/widgets/homescreen_widget/searchbar_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String?>> gridItems = [
+      {
+        'image': 'assets/electric.png',
+        'title': 'Electrical',
+        'category': 'electricalWorkers'
+      },
+      {
+        'image': 'assets/fridge.png',
+        'title': 'Fridge',
+        'category': 'fridgeWorkers'
+      },
+      {
+        'image': 'assets/ac.png',
+        'title': 'Air condition',
+        'category': 'acWorkers'
+      },
+      {
+        'image': 'assets/handyman.png',
+        'title': 'Handyman',
+        'category': 'handymanWorkers'
+      },
+      {
+        'image': 'assets/mop.png',
+        'title': 'Cleaning',
+        'category': 'cleaningWorkers'
+      },
+      {
+        'image': 'assets/plumbing.png',
+        'title': 'Plumbing',
+        'category': 'plumbingWorkers'
+      },
+      {
+        'image': 'assets/wm.png',
+        'title': 'Washing Machine',
+        'category': 'washingMachineWorkers'
+      },
+      {
+        'image': 'assets/painting.png',
+        'title': 'Painting',
+        'category': 'paintingWorkers'
+      },
+    ];
+
+    final List<String> bannerImages = [
+      'assets/carosal_electricaion.jpg',
+      'assets/elecmech.webp',
+      'assets/acmech.jpg',
+    ];
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(249, 255, 255, 255),
-      appBar: AppBar(
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(Icons.location_on),
-            SizedBox(width: 5),
-            Text(
-              'Location Name',
-              style: TextStyle(
-                fontSize: 15,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_downward),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      appBar: const CustomAppBar(),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search...',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {},
-                  ),
-                ],
+            const CustomSearchBar(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: CarouselBanner(
+                bannerImages: bannerImages,
+                bannerTitle: '',
               ),
             ),
-            const SizedBox(height: 50),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Image.asset(
-                  'assets/carosal_electricaion.jpg',
-                  fit: BoxFit.cover,
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 25.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  HomeText.allServices,
+                  style: AppText.averageblack,
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20,
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 15.0,
+                  crossAxisSpacing: 10.0,
+                ),
+                itemCount: gridItems.length,
+                itemBuilder: (context, index) {
+                  final item = gridItems[index];
+                  return GridItem(
+                    imagePath: item['image'],
+                    title: item['title'],
+                    category: item['category'],
+                  );
+                },
+              ),
             ),
-            const Text(
-              'All Services',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.only(left: 25.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  HomeText.popularServices,
+                  style: AppText.averageblack,
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _serviceContainer('Service 1'),
-                _serviceContainer('Service 2'),
-                _serviceContainer('Service 3'),
-                _serviceContainer('Service 4'),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 15.0,
+                  crossAxisSpacing: 10.0,
+                ),
+                itemCount: 4, // Display only 4 items
+                itemBuilder: (context, index) {
+                  final item = gridItems[index];
+                  return GridItem(
+                    imagePath: item['image'],
+                    title: item['title'],
+                    category: item['category'],
+                  );
+                },
+              ),
             ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _serviceContainer('Service 5'),
-                _serviceContainer('Service 6'),
-                _serviceContainer('Service 7'),
-                _serviceContainer('Service 8'),
-              ],
+            const SizedBox(height: 15),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                HomeText.happiness,
+                style: AppText.averageblack,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _serviceContainer(String text) {
-    return Column(
-      children: [
-        Container(
-          height: 60,
-          width: 60,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.extension),
-        ),
-        const SizedBox(height: 5),
-        Text(text),
-      ],
     );
   }
 }

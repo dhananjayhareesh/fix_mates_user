@@ -21,11 +21,11 @@ class AppText {
       color: Color.fromARGB(255, 0, 0, 0),
       overflow: TextOverflow.ellipsis);
 
-  static TextStyle get averagewhite => const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: AppColors.whiteColor,
-      overflow: TextOverflow.ellipsis);
+  static TextStyle get averageblack => GoogleFonts.andika(
+        fontSize: 23,
+        fontWeight: FontWeight.w600,
+        color: AppColors.blackColor,
+      );
 
   static TextStyle get labeltext => const TextStyle(
       fontSize: 18,
@@ -96,11 +96,5 @@ class AppText {
         fontSize: 32,
         fontWeight: FontWeight.w500,
         color: AppColors.whiteColor,
-      );
-
-  static TextStyle get versionName => GoogleFonts.lobster(
-        fontSize: 15,
-        fontWeight: FontWeight.w500,
-        color: const Color.fromARGB(158, 255, 255, 255),
       );
 }
