@@ -127,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSpacing: 15.0,
                   crossAxisSpacing: 10.0,
                 ),
-                itemCount: 4, // Display only 4 items
+                itemCount: 4,
                 itemBuilder: (context, index) {
                   final item = gridItems[index];
                   return GridItem(
