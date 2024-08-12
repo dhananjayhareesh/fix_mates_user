@@ -21,7 +21,8 @@ class GridItem extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WorkerListScreen(category: category!),
+                  builder: (context) =>
+                      ServiceProvidersScreen(category: category!),
                 ),
               );
             }

@@ -1,28 +1,36 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class WorkerListScreen extends StatelessWidget {
+class ServiceProvidersScreen extends StatelessWidget {
   final String category;
 
-  const WorkerListScreen({required this.category});
+  const ServiceProvidersScreen({Key? key, required this.category})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(category),
+        title: Text('Service Providers in $category'),
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance.collection(category).get(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('workers')
+            .where('category', isEqualTo: category)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
+
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
+
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No workers found.'));
+            return Center(
+                child: Text('No service providers found.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600])));
           }
 
           final workers = snapshot.data!.docs;
@@ -31,61 +39,30 @@ class WorkerListScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             itemCount: workers.length,
             itemBuilder: (context, index) {
-              final worker = workers[index].data() as Map<String, dynamic>;
-
+              final worker = workers[index];
+              final name = worker['userName'] ?? 'No name';
               final photoUrl = worker['photoUrl'] ?? '';
-              final userName = worker['userName'] ?? 'No name';
-              final userEmail = worker['userEmail'] ?? 'No email';
 
               return Card(
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
+                elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.all(12.0),
-                  leading: photoUrl.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: Image.network(
-                            photoUrl,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.grey,
-                                child: Icon(Icons.error, color: Colors.white),
-                              );
-                            },
-                            loadingBuilder: (context, child, progress) {
-                              if (progress == null) {
-                                return child;
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                        )
-                      : Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(50.0),
-                          ),
-                          child: Icon(Icons.person, color: Colors.white),
-                        ),
-                  title: Text(
-                    userName,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  contentPadding: const EdgeInsets.all(16.0),
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                    child:
+                        photoUrl.isEmpty ? Icon(Icons.person, size: 30) : null,
+                    radius: 30,
                   ),
-                  subtitle: Text(userEmail),
+                  title: Text(name,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  subtitle:
+                      Text(category, style: TextStyle(color: Colors.grey[600])),
+                  onTap: () {
+                    // Define what happens when a service provider is tapped
+                  },
                 ),
               );
             },

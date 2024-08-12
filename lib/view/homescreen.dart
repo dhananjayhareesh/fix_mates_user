@@ -15,42 +15,34 @@ class HomeScreen extends StatelessWidget {
       {
         'image': 'assets/electric.png',
         'title': 'Electrical',
-        'category': 'electricalWorkers'
+        'category': 'Electrical'
       },
-      {
-        'image': 'assets/fridge.png',
-        'title': 'Fridge',
-        'category': 'fridgeWorkers'
-      },
+      {'image': 'assets/fridge.png', 'title': 'Fridge', 'category': 'Fridge'},
       {
         'image': 'assets/ac.png',
         'title': 'Air condition',
-        'category': 'acWorkers'
+        'category': 'Air condition'
       },
       {
         'image': 'assets/handyman.png',
         'title': 'Handyman',
-        'category': 'handymanWorkers'
+        'category': 'Handyman'
       },
-      {
-        'image': 'assets/mop.png',
-        'title': 'Cleaning',
-        'category': 'cleaningWorkers'
-      },
+      {'image': 'assets/mop.png', 'title': 'Cleaning', 'category': 'Cleaning'},
       {
         'image': 'assets/plumbing.png',
         'title': 'Plumbing',
-        'category': 'plumbingWorkers'
+        'category': 'Plumbing'
       },
       {
         'image': 'assets/wm.png',
         'title': 'Washing Machine',
-        'category': 'washingMachineWorkers'
+        'category': 'Washing Machine'
       },
       {
         'image': 'assets/painting.png',
         'title': 'Painting',
-        'category': 'paintingWorkers'
+        'category': 'Painting'
       },
     ];
 
