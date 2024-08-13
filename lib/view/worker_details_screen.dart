@@ -1,3 +1,4 @@
+import 'package:fix_mates_user/view/opening_screens/booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,7 +12,8 @@ class ServiceProvidersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Service Providers in $category'),
+        backgroundColor: Colors.blue[200],
+        title: Text('Available Technicians'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -61,7 +63,10 @@ class ServiceProvidersScreen extends StatelessWidget {
                   subtitle:
                       Text(category, style: TextStyle(color: Colors.grey[600])),
                   onTap: () {
-                    // Define what happens when a service provider is tapped
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BookingScreen()),
+                    );
                   },
                 ),
               );

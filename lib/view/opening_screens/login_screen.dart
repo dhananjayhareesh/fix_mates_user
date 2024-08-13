@@ -19,8 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController countycode = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
-  bool phoneNumberValid = true; // Validation state for phone number
-
+  bool phoneNumberValid = true;
   @override
   void initState() {
     super.initState();
