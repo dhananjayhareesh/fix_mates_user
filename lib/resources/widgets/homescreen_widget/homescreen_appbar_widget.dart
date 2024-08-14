@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fix_mates_user/view/location_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fix_mates_user/view/profile_page.dart';
 
@@ -26,21 +27,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         double longitude = locationData['long'];
 
         // Get the current logged-in user
-        User? user = FirebaseAuth.instance.currentUser;
+        String user = FirebaseAuth.instance.currentUser!.phoneNumber.toString();
+        String cleanedUser = user.replaceFirst('+91', '');
 
-        if (user != null) {
+        Map<String, dynamic>? userData = await getUserDataByPhone(cleanedUser);
+
+        if (userData != null) {
           await FirebaseFirestore.instance
               .collection('usersDetails')
-              .doc(user.uid)
+              .doc(userData['id'])
               .set({
             'location': {
               'latitude': latitude,
               'longitude': longitude,
             },
             'locationName': locationController.text,
-          }, SetOptions(merge: true)); // Merge to update only specific fields
+          }, SetOptions(merge: true)); // Using merge to update existing data
 
-          // Update the app bar location name
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Location updated successfully!')),
           );
@@ -57,74 +60,103 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
-  Future<String> _fetchStoredLocationName() async {
-    User? user = FirebaseAuth.instance.currentUser;
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchStoredLocationDataStream() {
+    String user = FirebaseAuth.instance.currentUser!.phoneNumber.toString();
+    String cleanedUser = user.replaceFirst('+91', '');
 
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection(
-              'usersDetails') // Make sure this matches your Firestore collection name
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists && userDoc.data() != null) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        return userData['locationName'] ?? 'Location Name';
-      }
-    }
-    return 'Location Name';
+    return FirebaseFirestore.instance
+        .collection('usersDetails')
+        .where('userPhone', isEqualTo: cleanedUser)
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: _fetchStoredLocationName(),
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: fetchStoredLocationDataStream(),
       builder: (context, snapshot) {
-        String locationName = snapshot.data ?? 'Location Name';
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildAppBar(context, 'Loading...');
+        } else if (snapshot.hasError) {
+          return _buildAppBar(context, 'Error');
+        } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          Map<String, dynamic> locationName = snapshot.data!.docs.first.data();
+          return _buildAppBar(context, locationName['locationName']);
+        } else {
+          return _buildAppBar(context, 'Location Name');
+        }
+      },
+    );
+  }
 
-        return AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          title: GestureDetector(
-            onTap: () => _checkLocationPermission(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Image.asset(
-                  'assets/location.png',
-                  height: 24.0,
-                  width: 24.0,
-                ),
-                SizedBox(width: 5),
-                Text(
-                  locationName,
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
-                ),
-              ],
+  AppBar _buildAppBar(BuildContext context, String titleText) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.white,
+      title: GestureDetector(
+        onTap: () => _checkLocationPermission(context),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Image.asset(
+              'assets/location.png',
+              height: 24.0,
+              width: 24.0,
             ),
-          ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('assets/profilepic.png'),
-                radius: 18,
+            SizedBox(width: 5),
+            Text(
+              titleText,
+              style: GoogleFonts.poppins(
+                textStyle: TextStyle(
+                    color: Color.fromARGB(255, 4, 7, 188),
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(width: 16),
           ],
-        );
-      },
+        ),
+      ),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage()),
+            );
+          },
+          child: const CircleAvatar(
+            backgroundImage: AssetImage('assets/profilepic.png'),
+            radius: 18,
+          ),
+        ),
+        const SizedBox(width: 16),
+      ],
     );
   }
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+Future<Map<String, dynamic>?> getUserDataByPhone(String userPhone) async {
+  // Query the collection for the document with the matching userPhone
+  var querySnapshot = await FirebaseFirestore.instance
+      .collection('usersDetails')
+      .where('userPhone', isEqualTo: userPhone)
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    print('not empty');
+    var doc = querySnapshot.docs.first;
+
+    // Return a map with the document ID and data
+    return {
+      'id': doc.id, // Document ID
+      ...doc.data(), // Document data
+    };
+  } else {
+    print('empty');
+    // If no document is found, return null
+    return null;
+  }
 }

@@ -1,10 +1,12 @@
 import 'package:fix_mates_user/resources/constants/textstyle.dart';
 import 'package:fix_mates_user/resources/strings/hometext.dart';
 import 'package:fix_mates_user/resources/widgets/homescreen_widget/carosal_widget.dart';
+import 'package:fix_mates_user/resources/widgets/homescreen_widget/service_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fix_mates_user/resources/widgets/homescreen_widget/homescreen_appbar_widget.dart';
 import 'package:fix_mates_user/resources/widgets/homescreen_widget/homescreen_grid_widget.dart';
 import 'package:fix_mates_user/resources/widgets/homescreen_widget/searchbar_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -72,6 +74,27 @@ class HomeScreen extends StatelessWidget {
             popularHomeServiceGrid(gridItems),
             const SizedBox(height: 15),
             happinessText(),
+            SizedBox(height: 50),
+            Column(
+              children: [
+                ServiceItem(
+                  imagePath: 'assets/clock.png',
+                  text: 'Fast Service',
+                ),
+                ServiceItem(
+                  imagePath: 'assets/qna.png',
+                  text: 'Live Support',
+                ),
+                ServiceItem(
+                  imagePath: 'assets/best-price.png',
+                  text: 'Predefined Pricing',
+                ),
+                ServiceItem(
+                  imagePath: 'assets/verified.png',
+                  text: 'Verified Proffesionals',
+                ),
+              ],
+            )
           ],
         ),
       ),
