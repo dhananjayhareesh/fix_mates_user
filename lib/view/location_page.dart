@@ -10,18 +10,18 @@ class MapScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Select Your Location'),
+        title: const Text('Select Your Location'),
       ),
       body: OpenStreetMapSearchAndPick(
         buttonWidth: 130,
         zoomInIcon: Icons.zoom_in_sharp,
         zoomOutIcon: Icons.zoom_out,
         locationPinIconColor: Colors.blueGrey,
-        locationPinTextStyle: TextStyle(
+        locationPinTextStyle: const TextStyle(
             color: Colors.blueGrey, fontSize: 14, fontWeight: FontWeight.bold),
         buttonColor: Colors.blue,
         buttonText: 'Pick Location',
-        buttonTextStyle: TextStyle(
+        buttonTextStyle: const TextStyle(
             color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
         onPicked: (pickedData) {
           final data = {

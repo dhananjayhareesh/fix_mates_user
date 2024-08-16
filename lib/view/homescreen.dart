@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -74,30 +74,34 @@ class HomeScreen extends StatelessWidget {
             popularHomeServiceGrid(gridItems),
             const SizedBox(height: 15),
             happinessText(),
-            SizedBox(height: 50),
-            Column(
-              children: [
-                ServiceItem(
-                  imagePath: 'assets/clock.png',
-                  text: 'Fast Service',
-                ),
-                ServiceItem(
-                  imagePath: 'assets/qna.png',
-                  text: 'Live Support',
-                ),
-                ServiceItem(
-                  imagePath: 'assets/best-price.png',
-                  text: 'Predefined Pricing',
-                ),
-                ServiceItem(
-                  imagePath: 'assets/verified.png',
-                  text: 'Verified Proffesionals',
-                ),
-              ],
-            )
+            const SizedBox(height: 50),
+            homescreenUiElement()
           ],
         ),
       ),
+    );
+  }
+
+  Column homescreenUiElement() {
+    return const Column(
+      children: [
+        ServiceItem(
+          imagePath: 'assets/clock.png',
+          text: 'Fast Service',
+        ),
+        ServiceItem(
+          imagePath: 'assets/qna.png',
+          text: 'Live Support',
+        ),
+        ServiceItem(
+          imagePath: 'assets/best-price.png',
+          text: 'Predefined Pricing',
+        ),
+        ServiceItem(
+          imagePath: 'assets/verified.png',
+          text: 'Verified Proffesionals',
+        ),
+      ],
     );
   }
 

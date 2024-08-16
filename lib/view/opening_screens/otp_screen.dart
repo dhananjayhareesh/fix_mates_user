@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
+import 'package:fix_mates_user/view/main_screen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -97,7 +98,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       await auth.signInWithCredential(credential);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => MainScreen()),
                       );
                     } catch (e) {
                       print('Wrong OTP');

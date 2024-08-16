@@ -15,7 +15,7 @@ class ServiceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
-        left: 20,
+        left: 30,
         bottom: 15,
       ),
       child: Row(
@@ -37,7 +37,7 @@ class ServiceItem extends StatelessWidget {
             text,
             style: GoogleFonts.poppins(
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

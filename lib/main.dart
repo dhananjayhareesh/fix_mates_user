@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fix_mates_user/firebase_options.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
+import 'package:fix_mates_user/view/main_screen.dart';
 
 import 'package:fix_mates_user/view/opening_screens/login_screen.dart';
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: //LoginScreen(),
-          HomeScreen(),
+          LoginScreen(),
     );
   }
 }
