@@ -24,11 +24,24 @@ class MapScreen extends StatelessWidget {
         buttonTextStyle: const TextStyle(
             color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
         onPicked: (pickedData) {
+          // Extract additional details from the address map
+          final placeName = pickedData.address['place'] ?? '';
+          final district = pickedData.address['state_district'] ?? '';
+          final city = pickedData.address['city'] ?? '';
+          final town = pickedData.address['town'] ?? '';
+
+          // Construct a detailed address string
+          final detailedAddress = [placeName, district, city, town]
+              .where((element) => element.isNotEmpty)
+              .join(', ');
+
+          locationController.text = detailedAddress;
+
           final data = {
             'lat': pickedData.latLong.latitude,
             'long': pickedData.latLong.longitude,
           };
-          locationController.text = pickedData.address['state_district'] ?? '';
+
           Navigator.pop(context, data); // Return the location data
         },
       ),

@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fix_mates_user/utils/current_user_id_helper.dart';
 import 'package:fix_mates_user/view/location_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fix_mates_user/view/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -41,23 +43,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               'latitude': latitude,
               'longitude': longitude,
             },
-            'locationName': locationController.text,
+            'locationName':
+                locationController.text, // Store the detailed address
           }, SetOptions(merge: true)); // Using merge to update existing data
 
+          await SharedPrefsHelper.storeUserDocumentId(userData['id']);
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Location updated successfully!')),
+            const SnackBar(content: Text('Location updated successfully!')),
           );
         }
       }
     } else if (locationStatus.isDenied) {
       // Handle location permission denied case
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Location permission is denied!')),
+        const SnackBar(content: Text('Location permission is denied!')),
       );
     } else if (locationStatus.isPermanentlyDenied) {
       // Handle location permission permanently denied case
       openAppSettings();
     }
+  }
+
+  Future<void> storeCurrentUserDocumentId(String docId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userDocId', docId);
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchStoredLocationDataStream() {
@@ -80,8 +90,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         } else if (snapshot.hasError) {
           return _buildAppBar(context, 'Error');
         } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          Map<String, dynamic> locationName = snapshot.data!.docs.first.data();
-          return _buildAppBar(context, locationName['locationName']);
+          Map<String, dynamic> locationData = snapshot.data!.docs.first.data();
+          return _buildAppBar(
+              context, locationData['locationName'] ?? 'Unknown Location');
         } else {
           return _buildAppBar(context, 'Location Name');
         }
@@ -103,11 +114,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: 24.0,
               width: 24.0,
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               titleText,
               style: GoogleFonts.poppins(
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                     color: Color.fromARGB(255, 4, 7, 188),
                     fontSize: 15,
                     fontWeight: FontWeight.bold),

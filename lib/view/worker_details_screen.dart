@@ -1,4 +1,4 @@
-import 'package:fix_mates_user/view/opening_screens/booking_screen.dart';
+import 'package:fix_mates_user/view/booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -63,9 +63,18 @@ class ServiceProvidersScreen extends StatelessWidget {
                   subtitle:
                       Text(category, style: TextStyle(color: Colors.grey[600])),
                   onTap: () {
+                    final workerId = worker.id;
+                    final workerName = worker['userName'] ?? 'No name';
+
+                    print('Worker ID: $workerId');
+                    print('Worker name: $workerName');
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => BookingScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => BookingScreen(
+                                workerId: workerId,
+                                workerName: workerName,
+                              )),
                     );
                   },
                 ),
