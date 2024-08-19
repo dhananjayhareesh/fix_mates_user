@@ -1,16 +1,19 @@
 import 'package:fix_mates_user/bloc/BookingConformation/bloc/booking_conformation_bloc.dart';
 import 'package:fix_mates_user/bloc/DateSelection/bloc/date_selection_bloc.dart';
+import 'package:fix_mates_user/utils/current_user_id_helper.dart';
+import 'package:fix_mates_user/view/booking_screens/booking_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BookingConformationScreen extends StatelessWidget {
   final String workerId;
   final String workerName;
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeSlotController = TextEditingController();
+  final TextEditingController descriptionController =
+      TextEditingController(); // Controller for description
 
   BookingConformationScreen({
     super.key,
@@ -122,7 +125,7 @@ class BookingConformationScreen extends StatelessWidget {
                           ),
                           calendarStyle: CalendarStyle(
                             todayDecoration: BoxDecoration(
-                              color: Color.fromARGB(255, 165, 195, 247),
+                              color: Color.fromARGB(255, 148, 236, 194),
                               shape: BoxShape.circle,
                             ),
                             selectedDecoration: BoxDecoration(
@@ -173,6 +176,26 @@ class BookingConformationScreen extends StatelessWidget {
                         );
                       },
                     ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Add Description',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller:
+                          descriptionController, // Text field for description
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: 'Enter description...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
                       child: BlocBuilder<DateSelectionBloc, DateSelectionState>(
@@ -203,57 +226,68 @@ class BookingConformationScreen extends StatelessWidget {
                         },
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
+                    const SizedBox(height: 30),
                     ElevatedButton(
-                        onPressed: () async {
-                          try {
-                            final userDocId =
-                                await SharedPrefsHelper.getUserDocumentId();
-                            final selectedDate = dateController.text;
-                            final selectedTimeSlot = timeSlotController.text;
+                      onPressed: () async {
+                        try {
+                          final userDocId =
+                              await SharedPrefsHelper.getUserDocumentId();
+                          final selectedDate = dateController.text;
+                          final selectedTimeSlot = timeSlotController.text;
+                          final description = descriptionController.text;
 
-                            if (userDocId != null &&
-                                selectedDate.isNotEmpty &&
-                                selectedTimeSlot.isNotEmpty) {
-                              await FirebaseFirestore.instance
-                                  .collection('Bookings')
-                                  .add({
-                                'workerId': workerId,
-                                'userId': userDocId,
-                                'date': selectedDate,
-                                'timeSlot': selectedTimeSlot,
-                                'status':
-                                    'pending', // Or any other status you need
-                                'createdAt': FieldValue.serverTimestamp(),
-                              });
+                          if (userDocId != null &&
+                              selectedDate.isNotEmpty &&
+                              selectedTimeSlot.isNotEmpty &&
+                              description.isNotEmpty) {
+                            final bookingRef = await FirebaseFirestore.instance
+                                .collection('Bookings')
+                                .add({
+                              'workerId': workerId,
+                              'userId': userDocId,
+                              'date': selectedDate,
+                              'timeSlot': selectedTimeSlot,
+                              'description': description,
+                              'status': 'pending',
+                              'startTime': null,
+                              'endTime': null,
+                              'createdAt': FieldValue.serverTimestamp(),
+                            });
 
-                              print(
-                                  'Booking Confirmed: $userDocId, $workerId, $selectedDate, $selectedTimeSlot'); // Debug print
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Booking Confirmed')),
-                              );
-                            } else {
-                              print(
-                                  'Booking Confirmation Failed: Missing Information'); // Debug print
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Please select a date and time slot')),
-                              );
-                            }
-                          } catch (e) {
                             print(
-                                'Error confirming booking: $e'); // Debug print
+                                'Booking Confirmed: $userDocId, $workerId, $selectedDate, $selectedTimeSlot, $description');
+
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Error confirming booking')),
+                              const SnackBar(
+                                  content: Text('Booking Confirmed')),
+                            );
+
+                            // Navigate to Booking Confirmed Screen
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BookingConfirmedScreen(),
+                              ),
+                            );
+                          } else {
+                            print(
+                                'Booking Confirmation Failed: Missing Information');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Please complete all fields before confirming')),
                             );
                           }
-                        },
-                        child: Text('Confirm Booking'))
+                        } catch (e) {
+                          print('Error confirming booking: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Error confirming booking')),
+                          );
+                        }
+                      },
+                      child: const Text('Confirm Booking'),
+                    )
                   ],
                 ),
               );
@@ -268,46 +302,25 @@ class BookingConformationScreen extends StatelessWidget {
       BuildContext context, String timeSlot, String? selectedTimeSlot) {
     final isSelected = timeSlot == selectedTimeSlot;
 
-    return SizedBox(
-      width: 100.0, // Fixed width for buttons
-      height: 50.0, // Fixed height for buttons
+    return GestureDetector(
+      onTap: () {
+        context.read<DateSelectionBloc>().add(SelectTimeSlotEvent(timeSlot));
+        timeSlotController.text = timeSlot; // Update time slot in controller
+      },
       child: Container(
-        margin: const EdgeInsets.all(4.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            foregroundColor: isSelected ? Colors.white : Colors.black,
-            backgroundColor:
-                isSelected ? Colors.blue : Colors.grey[300], // Background color
-            padding: EdgeInsets.zero, // Remove default padding
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0), // Rounded corners
-            ),
-            elevation: 3.0, // Shadow for a raised effect
-          ),
-          onPressed: () {
-            print('Selected Time Slot: $timeSlot'); // Debug print
-            context
-                .read<DateSelectionBloc>()
-                .add(SelectTimeSlotEvent(timeSlot));
-          },
-          child: Center(
-            child: Text(
-              timeSlot,
-              style: TextStyle(
-                fontSize: 14, // Font size
-                color: isSelected ? Colors.white : Colors.black,
-              ),
-            ),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          timeSlot,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
     );
-  }
-}
-
-class SharedPrefsHelper {
-  static Future<String?> getUserDocumentId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userDocId');
   }
 }

@@ -135,9 +135,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               MaterialPageRoute(builder: (context) => ProfilePage()),
             );
           },
-          child: const CircleAvatar(
-            backgroundImage: AssetImage('assets/profilepic.png'),
-            radius: 18,
+          child: Container(
+            height: 25,
+            width: 25,
+            child: Image.asset('assets/notification.png'),
           ),
         ),
         const SizedBox(width: 16),
