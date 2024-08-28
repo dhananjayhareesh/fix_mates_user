@@ -1,5 +1,5 @@
 import 'package:fix_mates_user/bloc/BottomNav/bloc/bottom_nav_bloc.dart';
-import 'package:fix_mates_user/view/booking_screens/booking_detail_screen.dart';
+import 'package:fix_mates_user/view/booking_screens/booking_detail_list_screen.dart';
 import 'package:fix_mates_user/view/chat_screens/chat_screen.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
 import 'package:fix_mates_user/view/profile_page.dart';
@@ -11,7 +11,7 @@ class MainScreen extends StatelessWidget {
 
   final List<Widget> _pages = [
     HomeScreen(),
-    BookingDetailScreen(),
+    BookingDetailListScreen(),
     ChatScreen(),
     ProfilePage(),
   ];

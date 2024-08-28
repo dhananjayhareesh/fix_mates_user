@@ -12,8 +12,7 @@ class BookingConformationScreen extends StatelessWidget {
   final String workerName;
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeSlotController = TextEditingController();
-  final TextEditingController descriptionController =
-      TextEditingController(); // Controller for description
+  final TextEditingController descriptionController = TextEditingController();
 
   BookingConformationScreen({
     super.key,
@@ -186,8 +185,7 @@ class BookingConformationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     TextField(
-                      controller:
-                          descriptionController, // Text field for description
+                      controller: descriptionController,
                       maxLines: 4,
                       decoration: InputDecoration(
                         hintText: 'Enter description...',

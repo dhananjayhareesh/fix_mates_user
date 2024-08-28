@@ -1,4 +1,4 @@
-import 'package:fix_mates_user/view/booking_screens/booking_detail_screen.dart';
+import 'package:fix_mates_user/view/booking_screens/booking_detail_list_screen.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +50,7 @@ class BookingConfirmedScreen extends StatelessWidget {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BookingDetailScreen(),
+                    builder: (context) => BookingDetailListScreen(),
                   ),
                   (route) => false,
                 );
