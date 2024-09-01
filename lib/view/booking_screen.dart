@@ -39,17 +39,21 @@ class BookingScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  workerName,
-                  style: TextStyle(color: Colors.white),
+            child: Card(
+              child: Container(
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Column(
+                      children: [
+                        Text('First Hour Charges'),
+                      ],
+                    )
+                  ],
                 ),
               ),
             ),

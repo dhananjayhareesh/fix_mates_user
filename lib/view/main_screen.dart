@@ -24,46 +24,74 @@ class MainScreen extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             body: _pages[state.selectedIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: state.selectedIndex,
-              onTap: (index) {
-                context.read<BottomNavBloc>().add(BottomNavItemSelected(index));
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.home,
-                    color: Color.fromARGB(255, 2, 66, 176),
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    spreadRadius: 2,
                   ),
-                  label: 'Home',
+                ],
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.calendar_month,
-                    color: Color.fromARGB(255, 2, 66, 176),
-                  ),
-                  label: 'Bookings',
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.chat,
-                    color: Color.fromARGB(255, 2, 66, 176),
-                  ),
-                  label: 'Support',
+                child: BottomNavigationBar(
+                  currentIndex: state.selectedIndex,
+                  onTap: (index) {
+                    context
+                        .read<BottomNavBloc>()
+                        .add(BottomNavItemSelected(index));
+                  },
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.home,
+                        color: Colors.white,
+                      ),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.calendar_month,
+                        color: Colors.white,
+                      ),
+                      label: 'Bookings',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.chat,
+                        color: Colors.white,
+                      ),
+                      label: 'Support',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                      ),
+                      label: 'Profile',
+                    ),
+                  ],
+                  selectedItemColor: Colors.black,
+                  unselectedItemColor: Colors.white60,
+                  selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  unselectedLabelStyle:
+                      TextStyle(fontWeight: FontWeight.normal),
+                  backgroundColor: Colors.blueAccent,
+                  type: BottomNavigationBarType.fixed,
+                  elevation: 10,
+                  showSelectedLabels: true,
+                  showUnselectedLabels: true,
+                  selectedFontSize: 14,
+                  unselectedFontSize: 12,
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.person,
-                    color: Color.fromARGB(255, 2, 66, 176),
-                  ),
-                  label: 'Profile',
-                ),
-              ],
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.grey,
-              selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-              backgroundColor: Colors.white,
+              ),
             ),
           );
         },
