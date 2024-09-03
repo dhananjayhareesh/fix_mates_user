@@ -5,7 +5,7 @@ import 'package:fix_mates_user/view/location_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:fix_mates_user/view/profile_page.dart';
+import 'package:fix_mates_user/view/notification_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -119,7 +119,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               titleText,
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
-                    color: Color.fromARGB(255, 4, 7, 188),
+                    color: Colors.blueAccent,
                     fontSize: 15,
                     fontWeight: FontWeight.bold),
               ),
@@ -132,7 +132,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
+              MaterialPageRoute(builder: (context) => NotificationScreen()),
             );
           },
           child: Container(

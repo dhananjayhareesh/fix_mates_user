@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fix_mates_user/view/homescreen.dart';
 import 'package:fix_mates_user/view/main_screen.dart';
 
 import 'package:flutter/material.dart';

@@ -2,7 +2,7 @@ import 'package:fix_mates_user/bloc/BottomNav/bloc/bottom_nav_bloc.dart';
 import 'package:fix_mates_user/view/booking_screens/booking_detail_list_screen.dart';
 import 'package:fix_mates_user/view/chat_screens/chat_screen.dart';
 import 'package:fix_mates_user/view/homescreen.dart';
-import 'package:fix_mates_user/view/profile_page.dart';
+import 'package:fix_mates_user/view/profile_screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +13,7 @@ class MainScreen extends StatelessWidget {
     HomeScreen(),
     BookingDetailListScreen(),
     ChatScreen(),
-    ProfilePage(),
+    ProfileScreen(),
   ];
 
   @override
@@ -78,7 +78,7 @@ class MainScreen extends StatelessWidget {
                       label: 'Profile',
                     ),
                   ],
-                  selectedItemColor: Colors.black,
+                  selectedItemColor: Colors.white,
                   unselectedItemColor: Colors.white60,
                   selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
                   unselectedLabelStyle:

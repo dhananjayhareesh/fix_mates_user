@@ -17,27 +17,42 @@ class BookingDetailsBloc
     try {
       emit(BookingDetailsLoading());
 
-      final querySnapshot = await FirebaseFirestore.instance
+      final bookingQuerySnapshot = await FirebaseFirestore.instance
           .collection('Bookings')
           .where('userId', isEqualTo: event.userDocId)
           .get();
 
-      final bookings = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'date': data['date'],
-          'timeSlot': data['timeSlot'],
-          'description': data['description'],
-          'status': data['status'],
-          'startTime': data['startTime'],
-          'endTime': data['endTime'],
-        };
-      }).toList();
+      final bookings =
+          await Future.wait(bookingQuerySnapshot.docs.map((doc) async {
+        final booking = doc.data();
+
+        // Fetch worker details
+        if (booking.containsKey('workerId') && booking['workerId'] != null) {
+          final workerDoc = await FirebaseFirestore.instance
+              .collection('workers')
+              .doc(booking['workerId'])
+              .get();
+
+          if (workerDoc.exists) {
+            final workerData = workerDoc.data()!;
+            booking['workerName'] = workerData['userName'] ?? 'Unknown';
+            booking['workerCategory'] = workerData['category'] ?? 'Unknown';
+          } else {
+            booking['workerName'] = 'Unknown';
+            booking['workerCategory'] = 'Unknown';
+          }
+        } else {
+          booking['workerName'] = 'Unknown';
+          booking['workerCategory'] = 'Unknown';
+        }
+
+        booking['id'] = doc.id; // Add document ID to the booking data
+        return booking;
+      }).toList());
 
       emit(BookingDetailsLoaded(bookings));
     } catch (e) {
-      emit(BookingDetailsError('Failed to fetch bookings.'));
+      emit(BookingDetailsError('Failed to fetch user bookings.'));
     }
   }
 

@@ -37,17 +37,22 @@ class BookingConformationScreen extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Booking Confirmation'),
+          backgroundColor: Colors.blueAccent,
+          title: const Text(
+            'Booking Confirmation',
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(16.0),
           child: BlocBuilder<BookingConformationBloc, BookingConformationState>(
             builder: (context, state) {
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Your Selected Location
+                    // Location Section
                     const Text(
                       'Your Selected Location',
                       style: TextStyle(
@@ -57,12 +62,15 @@ class BookingConformationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Card(
-                      elevation: 2,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Container(
                         width: double.infinity,
-                        height: 80,
+                        padding: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
                           child: state is BookingConformationLoading
@@ -88,6 +96,8 @@ class BookingConformationScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    // Day Selection Section
                     const Text(
                       'Select Day',
                       style: TextStyle(
@@ -95,47 +105,61 @@ class BookingConformationScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     BlocBuilder<DateSelectionBloc, DateSelectionState>(
                       builder: (context, dateState) {
                         final selectedDate = dateState is DateSelectionSelected
                             ? dateState.selectedDate
                             : null;
 
-                        return TableCalendar(
-                          calendarFormat: CalendarFormat.month,
-                          focusedDay: today,
-                          firstDay: today, // Start from today
-                          lastDay: lastSelectableDate, // End after 5 days
-                          selectedDayPredicate: (day) {
-                            return selectedDate != null &&
-                                day.isAtSameMomentAs(selectedDate);
-                          },
-                          onDaySelected: (selectedDay, focusedDay) {
-                            print('Selected Day: $selectedDay'); // Debug print
-                            context
-                                .read<DateSelectionBloc>()
-                                .add(SelectDateEvent(selectedDay));
-                            dateController.text =
-                                selectedDay.toLocal().toString().split(' ')[0];
-                          },
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                          ),
-                          calendarStyle: CalendarStyle(
-                            todayDecoration: BoxDecoration(
-                              color: Color.fromARGB(255, 148, 236, 194),
-                              shape: BoxShape.circle,
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 1.0,
                             ),
-                            selectedDecoration: BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
+                          ),
+                          child: TableCalendar(
+                            calendarFormat: CalendarFormat.week,
+                            focusedDay: today,
+                            firstDay: today,
+                            lastDay: lastSelectableDate,
+                            selectedDayPredicate: (day) {
+                              return selectedDate != null &&
+                                  day.isAtSameMomentAs(selectedDate);
+                            },
+                            onDaySelected: (selectedDay, focusedDay) {
+                              context
+                                  .read<DateSelectionBloc>()
+                                  .add(SelectDateEvent(selectedDay));
+                              dateController.text = selectedDay
+                                  .toLocal()
+                                  .toString()
+                                  .split(' ')[0];
+                            },
+                            headerStyle: const HeaderStyle(
+                              formatButtonVisible: false,
+                              titleCentered: true,
+                            ),
+                            calendarStyle: CalendarStyle(
+                              todayDecoration: BoxDecoration(
+                                color: const Color(0xFF90CAF9),
+                                shape: BoxShape.circle,
+                              ),
+                              selectedDecoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                shape: BoxShape.circle,
+                              ),
+                              outsideDaysVisible: false,
                             ),
                           ),
                         );
                       },
                     ),
                     const SizedBox(height: 20),
+
+                    // Time Slot Selection Section
                     const Text(
                       'Select Time Slot',
                       style: TextStyle(
@@ -152,8 +176,8 @@ class BookingConformationScreen extends StatelessWidget {
                                 : null;
 
                         return Wrap(
-                          spacing: 8.0, // Space between buttons
-                          runSpacing: 8.0, // Space between rows
+                          spacing: 8.0,
+                          runSpacing: 8.0,
                           children: [
                             _buildTimeSlotButton(
                                 context, '9am - 10am', selectedTimeSlot),
@@ -176,8 +200,10 @@ class BookingConformationScreen extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
+
+                    // Description Section
                     const Text(
-                      'Add Description',
+                      'Any instruction for technician?',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -188,104 +214,126 @@ class BookingConformationScreen extends StatelessWidget {
                       controller: descriptionController,
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: 'Enter description...',
+                        hintText: 'Any thoughts to share?',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: BlocBuilder<DateSelectionBloc, DateSelectionState>(
-                        builder: (context, dateState) {
-                          final selectedDate =
-                              dateState is DateSelectionSelected
-                                  ? dateState.selectedDate
-                                  : null;
-                          final selectedTimeSlot =
-                              dateState is DateSelectionSelected
-                                  ? dateState.selectedTimeSlot
-                                  : null;
+                    const SizedBox(height: 30),
 
-                          dateController.text = selectedDate
-                                  ?.toLocal()
-                                  .toString()
-                                  .split(' ')[0] ??
-                              '';
-                          timeSlotController.text = selectedTimeSlot ?? '';
+                    // Booking Summary Section
+                    BlocBuilder<DateSelectionBloc, DateSelectionState>(
+                      builder: (context, dateState) {
+                        final selectedDate = dateState is DateSelectionSelected
+                            ? dateState.selectedDate
+                            : null;
+                        final selectedTimeSlot =
+                            dateState is DateSelectionSelected
+                                ? dateState.selectedTimeSlot
+                                : null;
 
-                          return Text(
-                            selectedDate != null && selectedTimeSlot != null
-                                ? 'Selected Date: ${selectedDate.toLocal().toString().split(' ')[0]}, Time Slot: $selectedTimeSlot'
-                                : 'Please select a date and time slot',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          );
-                        },
-                      ),
+                        dateController.text =
+                            selectedDate?.toLocal().toString().split(' ')[0] ??
+                                '';
+                        timeSlotController.text = selectedTimeSlot ?? '';
+
+                        return Text(
+                          selectedDate != null && selectedTimeSlot != null
+                              ? 'Selected Date: ${selectedDate.toLocal().toString().split(' ')[0]}, Time Slot: $selectedTimeSlot'
+                              : 'Please select a date and time slot',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        );
+                      },
                     ),
                     const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final userDocId =
-                              await SharedPrefsHelper.getUserDocumentId();
-                          final selectedDate = dateController.text;
-                          final selectedTimeSlot = timeSlotController.text;
-                          final description = descriptionController.text;
 
-                          if (userDocId != null &&
-                              selectedDate.isNotEmpty &&
-                              selectedTimeSlot.isNotEmpty &&
-                              description.isNotEmpty) {
-                            final bookingRef = await FirebaseFirestore.instance
-                                .collection('Bookings')
-                                .add({
-                              'workerId': workerId,
-                              'userId': userDocId,
-                              'date': selectedDate,
-                              'timeSlot': selectedTimeSlot,
-                              'description': description,
-                              'status': 'pending',
-                              'startTime': null,
-                              'endTime': null,
-                              'createdAt': FieldValue.serverTimestamp(),
-                            });
+                    // Confirm Booking Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            final userDocId =
+                                await SharedPrefsHelper.getUserDocumentId();
+                            final selectedDate = dateController.text;
+                            final selectedTimeSlot = timeSlotController.text;
+                            final description = descriptionController.text;
+                            final locationName = context
+                                    .read<BookingConformationBloc>()
+                                    .state is BookingConformationLoaded
+                                ? (context.read<BookingConformationBloc>().state
+                                        as BookingConformationLoaded)
+                                    .locationName
+                                : '';
 
-                            print(
-                                'Booking Confirmed: $userDocId, $workerId, $selectedDate, $selectedTimeSlot, $description');
+                            if (userDocId != null &&
+                                selectedDate.isNotEmpty &&
+                                selectedTimeSlot.isNotEmpty &&
+                                description.isNotEmpty) {
+                              final bookingRef = await FirebaseFirestore
+                                  .instance
+                                  .collection('Bookings')
+                                  .add({
+                                'workerId': workerId,
+                                'userId': userDocId,
+                                'date': selectedDate,
+                                'timeSlot': selectedTimeSlot,
+                                'description': description,
+                                'status': 'pending',
+                                'location': locationName,
+                                'startTime': null,
+                                'endTime': null,
+                                'amount': null,
+                                'paid': null,
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
 
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Booking Confirmed!')),
+                              );
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BookingConfirmedScreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Please fill all required fields')),
+                              );
+                            }
+                          } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Booking Confirmed')),
-                            );
-
-                            // Navigate to Booking Confirmed Screen
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BookingConfirmedScreen(),
-                              ),
-                            );
-                          } else {
-                            print(
-                                'Booking Confirmation Failed: Missing Information');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Please complete all fields before confirming')),
+                              SnackBar(content: Text('Error: $e')),
                             );
                           }
-                        } catch (e) {
-                          print('Error confirming booking: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Error confirming booking')),
-                          );
-                        }
-                      },
-                      child: const Text('Confirm Booking'),
-                    )
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirm Booking',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -297,27 +345,29 @@ class BookingConformationScreen extends StatelessWidget {
   }
 
   Widget _buildTimeSlotButton(
-      BuildContext context, String timeSlot, String? selectedTimeSlot) {
+    BuildContext context,
+    String timeSlot,
+    String? selectedTimeSlot,
+  ) {
     final isSelected = timeSlot == selectedTimeSlot;
 
-    return GestureDetector(
-      onTap: () {
-        context.read<DateSelectionBloc>().add(SelectTimeSlotEvent(timeSlot));
-        timeSlotController.text = timeSlot; // Update time slot in controller
+    return ChoiceChip(
+      label: Text(timeSlot),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          context.read<DateSelectionBloc>().add(SelectTimeSlotEvent(timeSlot));
+          timeSlotController.text = timeSlot;
+        }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          timeSlot,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+      selectedColor: Theme.of(context).primaryColor,
+      backgroundColor: Colors.grey.shade200,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
     );
   }

@@ -1,4 +1,4 @@
-import 'package:fix_mates_user/view/worker_details_screen.dart';
+import 'package:fix_mates_user/view/booking_screens/worker_details_screen.dart';
 import 'package:flutter/material.dart';
 
 class GridItem extends StatelessWidget {
