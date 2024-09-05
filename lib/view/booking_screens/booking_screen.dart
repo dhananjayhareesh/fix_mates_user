@@ -17,7 +17,7 @@ class BookingScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: const Text(
-          'Repair Services',
+          'Repair Services update',
           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

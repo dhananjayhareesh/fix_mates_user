@@ -12,10 +12,10 @@ class BookingDetailsScreen extends StatelessWidget {
   String formatTimestampWithTimeZone(dynamic timestamp) {
     if (timestamp is Timestamp) {
       DateTime dateTime = timestamp.toDate();
-      return DateFormat('MMMM d, yyyy \'at\' hh:mm:ss a zzz').format(dateTime);
+      return DateFormat('MMMM d, yyyy \'at\' hh:mm a').format(dateTime);
     } else if (timestamp is String) {
       DateTime dateTime = DateTime.parse(timestamp);
-      return DateFormat('MMMM d, yyyy \'at\' hh:mm:ss a zzz').format(dateTime);
+      return DateFormat('MMMM d, yyyy \'at\' hh:mm a').format(dateTime);
     } else {
       return 'Invalid date';
     }
@@ -24,8 +24,21 @@ class BookingDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Booking Details'),
+        centerTitle: true,
+        elevation: 4.0,
+        backgroundColor: Colors.blueAccent,
+        title: const Text(
+          'Booking Details',
+          style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: BlocProvider(
         create: (context) =>
@@ -44,59 +57,96 @@ class BookingDetailsScreen extends StatelessWidget {
                     Expanded(
                       child: ListView(
                         children: [
-                          _buildDetailContainer(
-                            title: 'Date',
-                            content:
-                                formatTimestampWithTimeZone(booking['date']),
-                            icon: Icons.date_range,
+                          _buildGroupContainer(
+                            title: 'Booking Information',
+                            details: [
+                              _buildDetailItem(
+                                title: 'Date',
+                                content: formatTimestampWithTimeZone(
+                                    booking['date']),
+                                icon: Icons.date_range,
+                              ),
+                              _buildDetailItem(
+                                title: 'Time Slot',
+                                content: booking['timeSlot'],
+                                icon: Icons.access_time,
+                              ),
+                              _buildDetailItem(
+                                title: 'Status',
+                                content: booking['status'],
+                                icon: Icons.info,
+                                statusColor: booking['status'] == 'completed'
+                                    ? Colors.green
+                                    : Colors.blueAccent,
+                              ),
+                            ],
                           ),
-                          _buildDetailContainer(
-                            title: 'Time Slot',
-                            content: booking['timeSlot'],
-                            icon: Icons.access_time,
+                          _buildGroupContainer(
+                            title: 'Payment Information',
+                            details: [
+                              _buildDetailItem(
+                                title: 'Amount',
+                                content: booking['amount'] != null
+                                    ? '\$${booking['amount']}'
+                                    : 'Pending',
+                                icon: Icons.monetization_on,
+                              ),
+                              _buildDetailItem(
+                                title: 'Payment Status',
+                                content: booking['paid'] == 'completed'
+                                    ? 'Paid'
+                                    : 'Not Paid',
+                                icon: booking['paid'] == 'completed'
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                statusColor: booking['paid'] == 'completed'
+                                    ? Colors.green
+                                    : Colors.redAccent,
+                              ),
+                            ],
                           ),
-                          _buildDetailContainer(
-                            title: 'Description',
-                            content: booking['description'],
-                            icon: Icons.description,
+                          _buildGroupContainer(
+                            title: 'Work Timing',
+                            details: [
+                              _buildDetailItem(
+                                title: 'Start Time',
+                                content: booking['startTime'] != null
+                                    ? formatTimestampWithTimeZone(
+                                        booking['startTime'])
+                                    : 'Not started',
+                                icon: Icons.timer,
+                              ),
+                              _buildDetailItem(
+                                title: 'Stop Time',
+                                content: booking['endTime'] != null
+                                    ? formatTimestampWithTimeZone(
+                                        booking['endTime'])
+                                    : 'Not stopped',
+                                icon: Icons.timer_off,
+                              ),
+                            ],
                           ),
-                          _buildDetailContainer(
-                            title: 'Status',
-                            content: booking['status'],
-                            icon: Icons.info,
-                          ),
-                          _buildDetailContainer(
-                            title: 'Start Time',
-                            content: booking['startTime'] != null
-                                ? formatTimestampWithTimeZone(
-                                    booking['startTime'])
-                                : 'Not started',
-                            icon: Icons.timer,
-                          ),
-                          _buildDetailContainer(
-                            title: 'Stop Time',
-                            content: booking['endTime'] != null
-                                ? formatTimestampWithTimeZone(
-                                    booking['endTime'])
-                                : 'Not stopped',
-                            icon: Icons.timer_off,
-                          ),
-                          const SizedBox(height: 16.0),
-                          _buildDetailContainer(
-                            title: 'Worker Name',
-                            content: booking['workerName'],
-                            icon: Icons.person,
-                          ),
-                          _buildDetailContainer(
-                            title: 'Work Type',
-                            content: booking['workerCategory'],
-                            icon: Icons.category,
+                          _buildGroupContainer(
+                            title: 'Worker Information',
+                            details: [
+                              _buildDetailItem(
+                                title: 'Worker Name',
+                                content: booking['workerName'],
+                                icon: Icons.person,
+                              ),
+                              _buildDetailItem(
+                                title: 'Work Type',
+                                content: booking['workerCategory'],
+                                icon: Icons.category,
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16.0),
-                    _buildActionButtons(context, booking['status']),
+                    _buildActionButtons(
+                        context, booking['amount'], booking['paid']),
                   ],
                 ),
               );
@@ -111,29 +161,58 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailContainer({
+  Widget _buildGroupContainer({
     required String title,
-    required String content,
-    required IconData icon,
+    required List<Widget> details,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
+        gradient: LinearGradient(
+          colors: [Colors.white, Colors.grey.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 3,
+            blurRadius: 8,
             offset: const Offset(0, 3),
           ),
         ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 18.0,
+              color: Colors.blueAccent,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          ...details,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailItem({
+    required String title,
+    required String content,
+    required IconData icon,
+    Color? statusColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blueAccent, size: 30),
+          Icon(icon, color: statusColor ?? Colors.blueAccent, size: 28),
           const SizedBox(width: 16.0),
           Expanded(
             child: Column(
@@ -142,14 +221,17 @@ class BookingDetailsScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     fontSize: 16.0,
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 4.0),
                 Text(
                   content,
-                  style: const TextStyle(fontSize: 14.0),
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.grey,
+                  ),
                 ),
               ],
             ),
@@ -159,47 +241,67 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, String status) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            // Handle chat functionality
-          },
-          icon: const Icon(Icons.chat_bubble_outline),
-          label: const Text('Chat'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueAccent,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+  Widget _buildActionButtons(
+      BuildContext context, dynamic amount, String? paid) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.4),
+            blurRadius: 12,
+            spreadRadius: 3,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton.icon(
+            onPressed: () {
+              // Handle chat functionality
+            },
+            icon: const Icon(Icons.chat_bubble_outline),
+            label: const Text('Chat'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              elevation: 6,
             ),
           ),
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            // Handle payment or review functionality
-            if (status == 'completed') {
-              // Navigate to review screen
-            } else {
-              // Navigate to payment screen
-            }
-          },
-          icon: status == 'completed'
-              ? const Icon(Icons.rate_review)
-              : const Icon(Icons.payment),
-          label: Text(status == 'completed' ? 'Leave Review' : 'Payment'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                status == 'completed' ? Colors.green : Colors.orangeAccent,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+          ElevatedButton.icon(
+            onPressed: () {
+              // Handle payment or review functionality
+              if (paid == 'completed') {
+                // Navigate to review screen
+              } else if (amount != null) {
+                // Navigate to payment screen
+              }
+            },
+            icon: paid == 'completed'
+                ? const Icon(Icons.rate_review)
+                : const Icon(Icons.payment),
+            label:
+                Text(paid == 'completed' ? 'Leave Review' : 'Proceed to Pay'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: paid == 'completed'
+                  ? Colors.green
+                  : (amount != null ? Colors.orangeAccent : Colors.grey),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              elevation: 6,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
