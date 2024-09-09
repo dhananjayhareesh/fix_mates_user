@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fix_mates_user/resources/constants/textstyle.dart';
 import 'package:fix_mates_user/resources/strings/hometext.dart';
 import 'package:fix_mates_user/resources/widgets/homescreen_widget/carosal_widget.dart';
@@ -75,7 +76,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 15),
             happinessText(),
             const SizedBox(height: 50),
-            homescreenUiElement()
+            homescreenUiElement(),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:fix_mates_user/bloc/BookingDetails/bloc/booking_details_bloc.dart';
+import 'package:fix_mates_user/services/stripe_services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -276,12 +277,11 @@ class BookingDetailsScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
+            onPressed: () async {
               // Handle payment or review functionality
               if (paid == 'completed') {
-                // Navigate to review screen
               } else if (amount != null) {
-                // Navigate to payment screen
+                await StripeService.instance.makePayment();
               }
             },
             icon: paid == 'completed'

@@ -41,7 +41,7 @@ dependencies:
   cloud_firestore: ^4.15.8
   flutter_bloc: ^8.1.6
   google_fonts: ^6.2.1
-  carousel_slider: ^4.2.1
+  carousel_slider: ^5.0.0
   open_street_map_search_and_pick: ^0.1.1
   latlong2: ^0.9.1
   flutter_map: ^6.1.0
@@ -51,6 +51,8 @@ dependencies:
   equatable: ^2.0.5
   intl: ^0.19.0
   cached_network_image: ^3.2.3
+  flutter_stripe: ^10.2.0
+  dio: ^5.5.0+1
 
 dev_dependencies:
   flutter_test:
