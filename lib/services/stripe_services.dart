@@ -7,11 +7,11 @@ class StripeService {
 
   static final StripeService instance = StripeService._();
 
-  Future<void> makePayment() async {
+  Future<void> makePayment(int amount) async {
     try {
       String? paymentIntentClientSecret = await _createPaymentIntent(
-        100,
-        "usd",
+        amount,
+        "inr",
       );
       if (paymentIntentClientSecret == null) return;
       await Stripe.instance.initPaymentSheet(
@@ -66,7 +66,7 @@ class StripeService {
   }
 
   String _calculateAmount(int amount) {
-    final calculatedAmount = amount * 100;
+    final calculatedAmount = amount * 100; // Amount in cents
     return calculatedAmount.toString();
   }
 }

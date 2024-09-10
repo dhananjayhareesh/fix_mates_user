@@ -88,9 +88,9 @@ class BookingDetailsScreen extends StatelessWidget {
                               _buildDetailItem(
                                 title: 'Amount',
                                 content: booking['amount'] != null
-                                    ? '\$${booking['amount']}'
+                                    ? '₹${booking['amount']}'
                                     : 'Pending',
-                                icon: Icons.monetization_on,
+                                icon: Icons.money_rounded,
                               ),
                               _buildDetailItem(
                                 title: 'Payment Status',
@@ -281,7 +281,8 @@ class BookingDetailsScreen extends StatelessWidget {
               // Handle payment or review functionality
               if (paid == 'completed') {
               } else if (amount != null) {
-                await StripeService.instance.makePayment();
+                await StripeService.instance
+                    .makePayment(int.parse(amount.toString()));
               }
             },
             icon: paid == 'completed'
