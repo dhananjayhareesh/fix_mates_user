@@ -13,10 +13,10 @@ class BookingDetailsLoaded extends BookingDetailsState {
   BookingDetailsLoaded(this.bookings);
 }
 
-class BookingDetailLoaded extends BookingDetailsState {
+class BookingDetailLoadedState extends BookingDetailsState {
   final Map<String, dynamic> booking;
 
-  BookingDetailLoaded(this.booking);
+  BookingDetailLoadedState(this.booking);
 }
 
 class BookingDetailsError extends BookingDetailsState {
@@ -24,3 +24,5 @@ class BookingDetailsError extends BookingDetailsState {
 
   BookingDetailsError(this.message);
 }
+
+class PaymentSuccessRebuildState extends BookingDetailsState {}

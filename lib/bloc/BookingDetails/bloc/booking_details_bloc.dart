@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
@@ -10,6 +12,7 @@ class BookingDetailsBloc
   BookingDetailsBloc() : super(BookingDetailsInitial()) {
     on<FetchUserBookings>(_onFetchUserBookings);
     on<FetchBookingDetail>(_onFetchBookingDetail);
+    on<PaymentSuccessRebuildEvent>(paymentSuccessRebuildEvent);
   }
 
   Future<void> _onFetchUserBookings(
@@ -84,12 +87,18 @@ class BookingDetailsBloc
           booking['workerCategory'] = 'Unknown';
         }
 
-        emit(BookingDetailLoaded(booking));
+        emit(BookingDetailLoadedState(booking));
       } else {
         emit(BookingDetailsError('Booking not found.'));
       }
     } catch (e) {
       emit(BookingDetailsError('Failed to fetch booking details.'));
     }
+  }
+
+  FutureOr<void> paymentSuccessRebuildEvent(
+      PaymentSuccessRebuildEvent event, Emitter<BookingDetailsState> emit) {
+    emit(PaymentSuccessRebuildState());
+    print('bloc called');
   }
 }

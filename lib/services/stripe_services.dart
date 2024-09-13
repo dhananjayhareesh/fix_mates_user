@@ -7,7 +7,7 @@ class StripeService {
 
   static final StripeService instance = StripeService._();
 
-  Future<void> makePayment(int amount) async {
+  Future makePayment(int amount) async {
     try {
       String? paymentIntentClientSecret = await _createPaymentIntent(
         amount,
@@ -20,7 +20,13 @@ class StripeService {
           merchantDisplayName: "Fix Mates",
         ),
       );
-      await _processPayment();
+      return await _processPayment().then(
+        (value) {
+          return true;
+        },
+      ).catchError((err) {
+        return false;
+      });
     } catch (e) {
       print(e);
     }
@@ -56,10 +62,16 @@ class StripeService {
     return null;
   }
 
-  Future<void> _processPayment() async {
+  Future _processPayment() async {
     try {
-      await Stripe.instance.presentPaymentSheet();
-      await Stripe.instance.confirmPaymentSheetPayment();
+      await Stripe.instance.presentPaymentSheet().then(
+        (value) {
+          return true;
+        },
+      ).catchError((err) {
+        return false;
+      });
+      //await Stripe.instance.confirmPaymentSheetPayment();
     } catch (e) {
       print(e);
     }

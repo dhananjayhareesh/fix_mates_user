@@ -14,3 +14,5 @@ class FetchBookingDetail extends BookingDetailsEvent {
 
   FetchBookingDetail(this.bookingId);
 }
+
+class PaymentSuccessRebuildEvent extends BookingDetailsEvent {}

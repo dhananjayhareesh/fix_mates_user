@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fix_mates_user/bloc/BookingDetails/bloc/booking_details_bloc.dart';
 import 'package:fix_mates_user/view/booking_screens/booking_details_screen.dart';
@@ -10,6 +11,16 @@ class BookingDetailListScreen extends StatelessWidget {
   Future<String?> getUserDocId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('userDocId');
+  }
+
+  String formatDate(String dateStr) {
+    // Parse the date string into a DateTime object
+    DateTime date = DateTime.parse(dateStr);
+
+    // Format the DateTime object into dd/MM/yyyy format
+    String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+
+    return formattedDate;
   }
 
   @override
@@ -116,7 +127,7 @@ class BookingDetailListScreen extends StatelessWidget {
                                           color: Colors.blueAccent),
                                       const SizedBox(width: 8.0),
                                       Text(
-                                        'Date: ${booking['date']}',
+                                        'Date: ${formatDate(booking['date'])}',
                                         style: const TextStyle(
                                           fontSize: 14.0,
                                           color: Colors.black87,

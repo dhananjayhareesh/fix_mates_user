@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fix_mates_user/bloc/BookingDetails/bloc/booking_details_bloc.dart';
 import 'package:fix_mates_user/services/stripe_services.dart';
 import 'package:intl/intl.dart';
@@ -48,9 +49,10 @@ class BookingDetailsScreen extends StatelessWidget {
           builder: (context, state) {
             if (state is BookingDetailsLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is BookingDetailLoaded) {
+            } else if (state is BookingDetailLoadedState) {
               final booking = state.booking;
-
+              final BookingDetailsBloc bookingDetailsBloc =
+                  BookingDetailsBloc();
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -66,6 +68,11 @@ class BookingDetailsScreen extends StatelessWidget {
                                 content: formatTimestampWithTimeZone(
                                     booking['date']),
                                 icon: Icons.date_range,
+                              ),
+                              _buildDetailItem(
+                                title: 'Booking ID',
+                                content: bookingId, // Show document ID here
+                                icon: Icons.info,
                               ),
                               _buildDetailItem(
                                 title: 'Time Slot',
@@ -92,17 +99,23 @@ class BookingDetailsScreen extends StatelessWidget {
                                     : 'Pending',
                                 icon: Icons.money_rounded,
                               ),
-                              _buildDetailItem(
-                                title: 'Payment Status',
-                                content: booking['paid'] == 'completed'
-                                    ? 'Paid'
-                                    : 'Not Paid',
-                                icon: booking['paid'] == 'completed'
-                                    ? Icons.check_circle
-                                    : Icons.cancel,
-                                statusColor: booking['paid'] == 'completed'
-                                    ? Colors.green
-                                    : Colors.redAccent,
+                              BlocBuilder<BookingDetailsBloc,
+                                  BookingDetailsState>(
+                                bloc: bookingDetailsBloc,
+                                builder: (context, state) {
+                                  return _buildDetailItem(
+                                    title: 'Payment Status',
+                                    content: booking['paid'] == 'completed'
+                                        ? 'Paid'
+                                        : 'Not Paid',
+                                    icon: booking['paid'] == 'completed'
+                                        ? Icons.check_circle
+                                        : Icons.cancel,
+                                    statusColor: booking['paid'] == 'completed'
+                                        ? Colors.green
+                                        : Colors.redAccent,
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -146,8 +159,13 @@ class BookingDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16.0),
-                    _buildActionButtons(
-                        context, booking['amount'], booking['paid']),
+                    BlocBuilder<BookingDetailsBloc, BookingDetailsState>(
+                      bloc: bookingDetailsBloc,
+                      builder: (context, state) {
+                        return _buildActionButtons(context, booking['amount'],
+                            booking['paid'], bookingDetailsBloc);
+                      },
+                    ),
                   ],
                 ),
               );
@@ -243,7 +261,7 @@ class BookingDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons(
-      BuildContext context, dynamic amount, String? paid) {
+      BuildContext context, dynamic amount, String? paid, bookingDetailsBloc) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       decoration: BoxDecoration(
@@ -276,30 +294,49 @@ class BookingDetailsScreen extends StatelessWidget {
               elevation: 6,
             ),
           ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              // Handle payment or review functionality
-              if (paid == 'completed') {
-              } else if (amount != null) {
-                await StripeService.instance
-                    .makePayment(int.parse(amount.toString()));
-              }
+          BlocBuilder<BookingDetailsBloc, BookingDetailsState>(
+            bloc: bookingDetailsBloc,
+            builder: (context, state) {
+              return ElevatedButton.icon(
+                onPressed: () async {
+                  // Handle payment or review functionality
+                  if (paid == 'completed') {
+                  } else if (amount != null) {
+                    dynamic pay = await StripeService.instance
+                        .makePayment(int.parse(amount.toString()));
+                    print(pay);
+                    pay == true
+                        ? {
+                            await FirebaseFirestore.instance
+                                .collection(
+                                    'Bookings') // Ensure this collection name is correct
+                                .doc(
+                                    bookingId) // Ensure this document ID is correct
+                                .update({'paid': 'completed'}),
+                            print('state going to refresh'),
+                          }
+                        : print('fail');
+                    bookingDetailsBloc.add(PaymentSuccessRebuildEvent());
+                  }
+                },
+                icon: paid == 'completed'
+                    ? const Icon(Icons.rate_review)
+                    : const Icon(Icons.payment),
+                label: Text(
+                    paid == 'completed' ? 'Leave Review' : 'Proceed to Pay'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: paid == 'completed'
+                      ? Colors.green
+                      : (amount != null ? Colors.orangeAccent : Colors.grey),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  elevation: 6,
+                ),
+              );
             },
-            icon: paid == 'completed'
-                ? const Icon(Icons.rate_review)
-                : const Icon(Icons.payment),
-            label:
-                Text(paid == 'completed' ? 'Leave Review' : 'Proceed to Pay'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: paid == 'completed'
-                  ? Colors.green
-                  : (amount != null ? Colors.orangeAccent : Colors.grey),
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              elevation: 6,
-            ),
           ),
         ],
       ),

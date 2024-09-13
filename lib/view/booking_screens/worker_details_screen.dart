@@ -22,7 +22,7 @@ class ServiceProvidersScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
-        title: Text(
+        title: const Text(
           'Available Technicians',
           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
@@ -45,7 +45,7 @@ class ServiceProvidersScreen extends StatelessWidget {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (snapshot.hasError) {
@@ -54,9 +54,11 @@ class ServiceProvidersScreen extends StatelessWidget {
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
-                      child: Text('No service providers found.',
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.grey[600])));
+                    child: Text(
+                      'No service providers found.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    ),
+                  );
                 }
 
                 final workers = snapshot.data!.docs;
@@ -78,27 +80,30 @@ class ServiceProvidersScreen extends StatelessWidget {
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Container(
-                            width: 80, // Larger width for the image
-                            height: 80, // Larger height for the image
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              image: photoUrl.isNotEmpty
-                                  ? DecorationImage(
-                                      image: NetworkImage(photoUrl),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                            ),
-                            child: photoUrl.isEmpty
-                                ? Icon(Icons.person,
-                                    size: 40, color: Colors.grey[600])
-                                : null,
+                            width: 80,
+                            height: 80,
+                            child: photoUrl.isNotEmpty
+                                ? FadeInImage.assetNetwork(
+                                    placeholder: 'assets/placeholder.png',
+                                    image: photoUrl,
+                                    fit: BoxFit.cover,
+                                    imageErrorBuilder:
+                                        (context, error, stackTrace) {
+                                      return Icon(
+                                        Icons.error,
+                                        color: Colors.red,
+                                        size: 40,
+                                      );
+                                    },
+                                  )
+                                : const Icon(Icons.person,
+                                    size: 40, color: Colors.grey),
                           ),
                         ),
                         title: Center(
                           child: Text(
                             name,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black),
@@ -107,17 +112,17 @@ class ServiceProvidersScreen extends StatelessWidget {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               'Work Type: $category',
                               style: TextStyle(
                                   fontSize: 14, color: Colors.grey[600]),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   '₹390 per hour',
                                   style: TextStyle(
                                       fontSize: 14,
@@ -128,7 +133,7 @@ class ServiceProvidersScreen extends StatelessWidget {
                                   children: [
                                     Icon(Icons.star,
                                         color: Colors.yellow[700], size: 18),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     Text(
                                       '4', // Static rating value for now
                                       style: TextStyle(
@@ -145,15 +150,14 @@ class ServiceProvidersScreen extends StatelessWidget {
                           final workerId = worker.id;
                           final workerName = worker['userName'] ?? 'No name';
 
-                          print('Worker ID: $workerId');
-                          print('Worker name: $workerName');
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => BookingScreen(
-                                      workerId: workerId,
-                                      workerName: workerName,
-                                    )),
+                              builder: (context) => BookingScreen(
+                                workerId: workerId,
+                                workerName: workerName,
+                              ),
+                            ),
                           );
                         },
                       ),
